@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Street Food Hub - AI-Powered Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        
+        /* Header */
+        .header { background: rgba(255, 255, 255, 0.95); padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; }
+        .nav { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #333; text-decoration: none; }
+        .nav-menu { display: flex; list-style: none; gap: 2rem; }
+        .nav-menu a { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s; }
+        .nav-menu a:hover { color: #667eea; }
+        
+        /* Language Selector */
+        .language-selector { display: flex; gap: 0.5rem; align-items: center; }
+        .lang-btn { padding: 0.3rem 0.8rem; border: 1px solid #ddd; border-radius: 5px; background: white; cursor: pointer; transition: all 0.3s; }
+        .lang-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .lang-btn:hover { background: #f0f0f0; }
+        
+        /* Floating Offers */
+        .floating-offers { position: fixed; top: 80px; left: 0; right: 0; z-index: 999; background: linear-gradient(45deg, #ff6b6b, #ffa500); color: white; padding: 0.5rem; text-align: center; animation: slideDown 0.5s ease-out; }
+        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        .offer-text { font-weight: bold; font-size: 1.1rem; }
+        .offer-close { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; }
+        
+        /* Cart */
+        .cart-icon { position: relative; cursor: pointer; font-size: 1.5rem; }
+        .cart-count { position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
+        .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2001; }
+        .cart-content { background: white; border-radius: 15px; padding: 2rem; max-width: 600px; width: 90%; margin: 2rem auto; max-height: 80vh; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #eee; }
+        .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+        .cart-total { font-size: 1.2rem; font-weight: bold; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #eee; }
+        
+        /* Bill Modal */
+        .bill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2002; }
+        .bill-content { background: white; border-radius: 15px; padding: 2rem; max-width: 500px; width: 90%; margin: 2rem auto; }
+        .bill-header { text-align: center; border-bottom: 2px solid #667eea; padding-bottom: 1rem; margin-bottom: 1rem; }
+        .bill-item { display: flex; justify-content: space-between; margin: 0.5rem 0; }
+        .bill-total { font-size: 1.3rem; font-weight: bold; border-top: 2px solid #eee; padding-top: 1rem; margin-top: 1rem; }
+        
+        /* Animations */
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .bounce { animation: bounce 0.6s ease-in-out; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        /* Enhanced AI Assistant */
+        .ai-suggestions { background: white; border-radius: 15px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .ai-suggestion-card { background: #f8f9fa; border-radius: 10px; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid #667eea; transition: transform 0.3s; }
+        .ai-suggestion-card:hover { transform: translateX(5px); }
+        
+        /* Waste Management Enhanced */
+        .waste-progress { background: #e8f5e8; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+        .progress-bar { width: 100%; height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 0.5rem 0; }
+        .progress-fill { height: 100%; background: linear-gradient(45deg, #28a745, #20c997); transition: width 0.5s; }
+        .waste-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .waste-detail { background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* AI Voice Assistant */
+        .ai-assistant { position: fixed; bottom: 2rem; right: 2rem; z-index: 1000; }
+        .ai-button { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(45deg, #ff6b6b, #ffa500); border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: transform 0.3s; }
+        .ai-button:hover { transform: scale(1.1); }
+        .ai-button.recording { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        
+        .ai-modal { display: none; position: fixed; bottom: 5rem; right: 2rem; width: 350px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1001; }
+        .ai-header { background: linear-gradient(45deg, #ff6b6b, #ffa500); color: white; padding: 1rem; border-radius: 15px 15px 0 0; }
+        .ai-content { padding: 1rem; max-height: 300px; overflow-y: auto; }
+        .ai-message { margin: 0.5rem 0; padding: 0.5rem; border-radius: 8px; }
+        .ai-user { background: #e3f2fd; text-align: right; }
+        .ai-bot { background: #f5f5f5; }
+        .ai-input { display: flex; gap: 0.5rem; padding: 1rem; border-top: 1px solid #eee; }
+        .ai-input input { flex: 1; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px; }
+        .ai-input button { padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        
+        /* Main Content */
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .section { background: white; border-radius: 15px; padding: 2rem; margin: 2rem 0; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        
+        /* Vendor Registration */
+        .registration-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #667eea; }
+        
+        /* Products Grid */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-image { width: 100%; height: 200px; object-fit: cover; }
+        .product-info { padding: 1.5rem; }
+        .product-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; color: #333; }
+        .product-supplier { color: #666; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .product-price { font-size: 1.3rem; font-weight: bold; color: #667eea; margin-bottom: 0.5rem; }
+        .product-rating { color: #ffd700; margin-bottom: 0.5rem; }
+        
+        /* Payment System */
+        .payment-section { background: #f8f9fa; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+        .payment-methods { display: flex; gap: 1rem; margin: 1rem 0; }
+        .payment-method { padding: 0.5rem 1rem; border: 2px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s; }
+        .payment-method.selected { border-color: #667eea; background: #667eea; color: white; }
+        
+        /* Waste Management */
+        .waste-tracker { background: #e8f5e8; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+        .waste-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .waste-stat { background: white; padding: 1rem; border-radius: 8px; text-align: center; }
+        
+        /* Food Safety */
+        .safety-monitor { background: #fff3cd; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+        .safety-status { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
+        .status-indicator { width: 12px; height: 12px; border-radius: 50%; }
+        .status-good { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-danger { background: #dc3545; }
+        
+        /* Buttons */
+        .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s; text-decoration: none; display: inline-block; text-align: center; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a6fd8; }
+        .btn-secondary { background: #f8f9fa; color: #333; border: 1px solid #dee2e6; }
+        .btn-secondary:hover { background: #e9ecef; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-danger { background: #dc3545; color: white; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; }
+        .modal-content { background: white; border-radius: 15px; padding: 2rem; max-width: 500px; width: 90%; margin: 2rem auto; position: relative; }
+        .close { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; color: #999; }
+        
+        /* Messages */
+        .message { padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav { flex-direction: column; gap: 1rem; }
+            .nav-menu { flex-direction: column; gap: 1rem; text-align: center; }
+            .registration-form { grid-template-columns: 1fr; }
+            .products-grid { grid-template-columns: 1fr; }
+            .ai-modal { width: 90%; right: 5%; }
+        }
+        
+        /* Accessibility */
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        [role="button"], [role="tab"] { cursor: pointer; }
+        .focus-visible { outline: 2px solid #667eea; outline-offset: 2px; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo">🍽 Smart Street Food Hub</a>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#vendors">Vendors</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#safety">Food Safety</a></li>
+                <li><a href="#waste">Waste Management</a></li>
+                <li><a href="#payments">Payments</a></li>
+            </ul>
+            <div class="language-selector">
+                <button class="lang-btn active" onclick="changeLanguage('en')">EN</button>
+                <button class="lang-btn" onclick="changeLanguage('hi')">हिं</button>
+                <button class="lang-btn" onclick="changeLanguage('mr')">मरा</button>
+                <div class="cart-icon" onclick="openCart()">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Floating Offers -->
+    <div class="floating-offers" id="floatingOffers">
+        <span class="offer-text">🎉 Special Offer: Get 20% off on all spices! Use code SPICE20</span>
+        <span class="offer-close" onclick="closeOffers()">×</span>
+    </div>
+
+    <!-- AI Voice Assistant -->
+    <div class="ai-assistant">
+        <button class="ai-button" id="aiButton" onclick="toggleAI()" aria-label="Open AI Assistant">
+            🤖
+        </button>
+        <div class="ai-modal" id="aiModal">
+            <div class="ai-header">
+                <h3>AI Assistant</h3>
+                <p>Ask me anything about street food vendors, products, or safety!</p>
+            </div>
+            <div class="ai-content" id="aiContent">
+                <div class="ai-message ai-bot">
+                    Hello! I'm your AI assistant. I can help you with vendor registration, product search, food safety monitoring, waste management, and payments. How can I help you today?
+                </div>
+            </div>
+            <div class="ai-input">
+                <input type="text" id="aiInput" placeholder="Type your message..." onkeypress="handleAIInput(event)">
+                <button onclick="sendAIMessage()">Send</button>
+                <button onclick="startVoiceRecognition()" id="voiceBtn">🎤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Vendor Registration -->
+        <section class="section" id="vendors">
+            <h2>🏪 Vendor Registration</h2>
+            <form id="vendorForm" class="registration-form">
+                <div class="form-group">
+                    <label for="vendorName">Business Name *</label>
+                    <input type="text" id="vendorName" required>
+                </div>
+                <div class="form-group">
+                    <label for="vendorType">Business Type</label>
+                    <select id="vendorType">
+                        <option value="street-food">Street Food Vendor</option>
+                        <option value="food-truck">Food Truck</option>
+                        <option value="market-stall">Market Stall</option>
+                        <option value="catering">Catering Service</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vendorEmail">Email *</label>
+                    <input type="email" id="vendorEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="vendorPhone">Phone *</label>
+                    <input type="tel" id="vendorPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="vendorLocation">Location *</label>
+                    <input type="text" id="vendorLocation" placeholder="Street address, city" required>
+                </div>
+                <div class="form-group">
+                    <label for="vendorCuisine">Cuisine Type</label>
+                    <select id="vendorCuisine">
+                        <option value="indian">Indian</option>
+                        <option value="mexican">Mexican</option>
+                        <option value="chinese">Chinese</option>
+                        <option value="american">American</option>
+                        <option value="mediterranean">Mediterranean</option>
+                        <option value="mixed">Mixed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vendorDescription">Business Description</label>
+                    <textarea id="vendorDescription" rows="3" placeholder="Describe your business, specialties, and unique offerings..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="vendorCertifications">Food Safety Certifications</label>
+                    <input type="text" id="vendorCertifications" placeholder="HACCP, ISO 22000, etc.">
+                </div>
+                <button type="submit" class="btn btn-primary">Register Vendor</button>
+            </form>
+        </section>
+
+        <!-- Products with Real Images -->
+        <section class="section" id="products">
+            <h2>📦 Available Products</h2>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Food Safety Monitoring -->
+        <section class="section" id="safety">
+            <h2>🔒 Food Safety Monitoring</h2>
+            <div class="safety-monitor">
+                <h3>Real-time Safety Status</h3>
+                <div class="safety-status">
+                    <span class="status-indicator status-good"></span>
+                    <span>Temperature Monitoring: Normal (4°C)</span>
+                </div>
+                <div class="safety-status">
+                    <span class="status-indicator status-good"></span>
+                    <span>Hygiene Standards: Excellent</span>
+                </div>
+                <div class="safety-status">
+                    <span class="status-indicator status-warning"></span>
+                    <span>Storage Conditions: Good (Check in 2 hours)</span>
+                </div>
+                <div class="safety-status">
+                    <span class="status-indicator status-good"></span>
+                    <span>Cross-contamination Risk: Low</span>
+                </div>
+                <button class="btn btn-primary" onclick="generateSafetyReport()">Generate Safety Report</button>
+            </div>
+        </section>
+
+        <!-- Waste Management -->
+        <section class="section" id="waste">
+            <h2>♻ Smart Waste Management</h2>
+            <div class="waste-tracker">
+                <h3>Waste Tracking Dashboard</h3>
+                <div class="waste-stats">
+                    <div class="waste-stat">
+                        <h4>Today's Waste</h4>
+                        <p>2.5 kg</p>
+                        <small>15% reduction from yesterday</small>
+                    </div>
+                    <div class="waste-stat">
+                        <h4>Weekly Average</h4>
+                        <p>18.2 kg</p>
+                        <small>22% below target</small>
+                    </div>
+                    <div class="waste-stat">
+                        <h4>Recycling Rate</h4>
+                        <p>85%</p>
+                        <small>Excellent performance</small>
+                    </div>
+                    <div class="waste-stat">
+                        <h4>Cost Savings</h4>
+                        <p>₹3,400</p>
+                        <small>This week</small>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="optimizeWasteManagement()">Optimize Waste Management</button>
+            </div>
+        </section>
+
+        <!-- Payment System -->
+        <section class="section" id="payments">
+            <h2>💳 Digital Payment Platform</h2>
+            <div class="payment-section">
+                <h3>Secure Payment Methods</h3>
+                <div class="payment-methods">
+                    <div class="payment-method" onclick="selectPayment('card')">💳 Credit/Debit Card</div>
+                    <div class="payment-method" onclick="selectPayment('mobile')">📱 Mobile Payment</div>
+                    <div class="payment-method" onclick="selectPayment('crypto')">₿ Cryptocurrency</div>
+                    <div class="payment-method" onclick="selectPayment('qr')">📱 QR Code</div>
+                </div>
+                <div id="paymentForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="text" id="expiryDate" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123">
+                    </div>
+                    <button class="btn btn-primary" onclick="processPayment()">Process Payment</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Privacy Notice -->
+        <section class="section">
+            <h2>🔒 Data Privacy & Security</h2>
+            <div class="info">
+                <h3>Our Commitment to Privacy</h3>
+                <ul>
+                    <li>🔐 All data is encrypted using industry-standard protocols</li>
+                    <li>🛡 We never share your personal information with third parties</li>
+                    <li>📋 You have full control over your data and can request deletion</li>
+                    <li>⚖ We comply with GDPR and local data protection laws</li>
+                    <li>🔍 Transparent algorithms - no hidden biases in our AI systems</li>
+                </ul>
+                <button class="btn btn-secondary" onclick="viewPrivacyPolicy()">View Privacy Policy</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-content">
+            <span class="close" onclick="closeCart()">&times;</span>
+            <h3>🛒 Your Cart</h3>
+            <div id="cartItems">
+                <!-- Cart items will be displayed here -->
+            </div>
+            <div class="cart-total" id="cartTotal">
+                Total: ₹0
+            </div>
+            <button class="btn btn-primary" onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Bill Modal -->
+    <div id="billModal" class="bill-modal">
+        <div class="bill-content">
+            <span class="close" onclick="closeBillModal()">&times;</span>
+            <div class="bill-header">
+                <h3>🍽 Street Food Hub</h3>
+                <p>Order Confirmation</p>
+                <p id="billDate"></p>
+            </div>
+            <div id="billItems">
+                <!-- Bill items will be displayed here -->
+            </div>
+            <div class="bill-total" id="billTotal">
+                <!-- Bill total will be displayed here -->
+            </div>
+            <button class="btn btn-success" onclick="confirmOrder()">Confirm Order</button>
+        </div>
+    </div>
+
+    <script>
+        // Real product data with actual images and Indian Rupees
+        const products = [
+            {
+                id: 1,
+                name: "Fresh Organic Tomatoes",
+                supplier: "Fresh Farms Co.",
+                price: 85,
+                image: "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=400&h=300&fit=crop",
+                rating: 4.8,
+                category: "vegetables",
+                safetyScore: 95,
+                origin: "Local Farm"
+            },
+            {
+                id: 2,
+                name: "Premium Basmati Rice",
+                supplier: "Quality Grains Ltd.",
+                price: 459,
+                image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+                rating: 4.6,
+                category: "grains",
+                safetyScore: 92,
+                origin: "India"
+            },
+            {
+                id: 3,
+                name: "Extra Virgin Olive Oil",
+                supplier: "Mediterranean Oils",
+                price: 285,
+                image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=300&fit=crop",
+                rating: 4.9,
+                category: "oils",
+                safetyScore: 98,
+                origin: "Italy"
+            },
+            {
+                id: 4,
+                name: "Organic Turmeric Powder",
+                supplier: "Spice Masters",
+                price: 129,
+                image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop",
+                rating: 4.7,
+                category: "spices",
+                safetyScore: 90,
+                origin: "India"
+            },
+            {
+                id: 5,
+                name: "Fresh Chicken Breast",
+                supplier: "Premium Meats",
+                price: 159,
+                image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop",
+                rating: 4.5,
+                category: "meat",
+                safetyScore: 88,
+                origin: "Local Farm"
+            },
+            {
+                id: 6,
+                name: "Artisan Bread",
+                supplier: "Bakery Fresh",
+                price: 65,
+                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop",
+                rating: 4.8,
+                category: "bakery",
+                safetyScore: 94,
+                origin: "Local Bakery"
+            }
+        ];
+
+        // Language translations
+        const translations = {
+            en: {
+                home: "Home",
+                vendors: "Vendors",
+                products: "Products",
+                safety: "Food Safety",
+                waste: "Waste Management",
+                payments: "Payments",
+                addToCart: "Add to Cart",
+                details: "Details",
+                cart: "Your Cart",
+                total: "Total",
+                checkout: "Proceed to Checkout",
+                orderConfirmation: "Order Confirmation",
+                confirmOrder: "Confirm Order",
+                specialOffer: "Special Offer: Get 20% off on all spices! Use code SPICE20"
+            },
+            hi: {
+                home: "होम",
+                vendors: "विक्रेता",
+                products: "उत्पाद",
+                safety: "खाद्य सुरक्षा",
+                waste: "अपशिष्ट प्रबंधन",
+                payments: "भुगतान",
+                addToCart: "कार्ट में जोड़ें",
+                details: "विवरण",
+                cart: "आपकी कार्ट",
+                total: "कुल",
+                checkout: "चेकआउट करें",
+                orderConfirmation: "ऑर्डर पुष्टि",
+                confirmOrder: "ऑर्डर की पुष्टि करें",
+                specialOffer: "विशेष ऑफर: सभी मसालों पर 20% की छूट! कोड SPICE20 का उपयोग करें"
+            },
+            mr: {
+                home: "मुख्यपृष्ठ",
+                vendors: "विक्रेते",
+                products: "उत्पादने",
+                safety: "अन्न सुरक्षा",
+                waste: "कचरा व्यवस्थापन",
+                payments: "पेमेंट्स",
+                addToCart: "कार्टमध्ये जोडा",
+                details: "तपशील",
+                cart: "तुमची कार्ट",
+                total: "एकूण",
+                checkout: "चेकआउट करा",
+                orderConfirmation: "ऑर्डर पुष्टीकरण",
+                confirmOrder: "ऑर्डर पुष्टी करा",
+                specialOffer: "विशेष ऑफर: सर्व मसाल्यांवर 20% सूट! कोड SPICE20 वापरा"
+            }
+        };
+
+        let currentLanguage = 'en';
+        let cart = [];
+        let selectedPaymentMethod = '';
+        let isRecording = false;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            displayProducts();
+            setupEventListeners();
+            updateLanguage();
+        });
+
+        // Language functions
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            document.querySelector('.offer-text').textContent = t.specialOffer;
+            // Update other text elements as needed
+        }
+
+        // Cart functions
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                const existingItem = cart.find(item => item.id === productId);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({ ...product, quantity: 1 });
+                }
+                updateCartCount();
+                showMessage(${product.name} added to cart!, 'success');
+                document.querySelector([onclick="addToCart(${productId})"]).classList.add('bounce');
+                setTimeout(() => {
+                    document.querySelector([onclick="addToCart(${productId})"]).classList.remove('bounce');
+                }, 600);
+            }
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function openCart() {
+            const modal = document.getElementById('cartModal');
+            const itemsContainer = document.getElementById('cartItems');
+            const totalElement = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '<p>Your cart is empty</p>';
+                totalElement.textContent = 'Total: ₹0';
+            } else {
+                itemsContainer.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}">
+                        <div>
+                            <h4>${item.name}</h4>
+                            <p>₹${item.price} x ${item.quantity}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-secondary" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span style="margin: 0 1rem;">${item.quantity}</span>
+                            <button class="btn btn-secondary" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                            <button class="btn btn-danger" onclick="removeFromCart(${item.id})" style="margin-left: 1rem;">Remove</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                totalElement.textContent = Total: ₹${total};
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                const item = cart.find(item => item.id === productId);
+                if (item) {
+                    item.quantity = newQuantity;
+                    openCart(); // Refresh cart display
+                }
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            openCart(); // Refresh cart display
+        }
+
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                showMessage('Your cart is empty!', 'error');
+                return;
+            }
+            closeCart();
+            showBill();
+        }
+
+        function showBill() {
+            const modal = document.getElementById('billModal');
+            const itemsContainer = document.getElementById('billItems');
+            const totalElement = document.getElementById('billTotal');
+            const dateElement = document.getElementById('billDate');
+            
+            dateElement.textContent = new Date().toLocaleDateString();
+            
+            itemsContainer.innerHTML = cart.map(item => `
+                <div class="bill-item">
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span>₹${item.price * item.quantity}</span>
+                </div>
+            `).join('');
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.05; // 5% tax
+            const delivery = 50; // ₹50 delivery charge
+            const total = subtotal + tax + delivery;
+            
+            totalElement.innerHTML = `
+                <div class="bill-item">
+                    <span>Subtotal:</span>
+                    <span>₹${subtotal}</span>
+                </div>
+                <div class="bill-item">
+                    <span>Tax (5%):</span>
+                    <span>₹${tax}</span>
+                </div>
+                <div class="bill-item">
+                    <span>Delivery:</span>
+                    <span>₹${delivery}</span>
+                </div>
+                <div class="bill-item" style="font-weight: bold; font-size: 1.2rem;">
+                    <span>Total:</span>
+                    <span>₹${total}</span>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeBillModal() {
+            document.getElementById('billModal').style.display = 'none';
+        }
+
+        function confirmOrder() {
+            showMessage('Order placed successfully! You will receive a confirmation shortly.', 'success');
+            cart = [];
+            updateCartCount();
+            closeBillModal();
+        }
+
+        // Floating offers
+        function closeOffers() {
+            document.getElementById('floatingOffers').style.display = 'none';
+        }
+
+        // Display products with real images
+        function displayProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card fade-in';
+                card.style.animationDelay = ${index * 0.1}s;
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-supplier">${product.supplier}</p>
+                        <p class="product-price">₹${product.price}</p>
+                        <div class="product-rating">${'⭐'.repeat(Math.floor(product.rating))} ${product.rating}</div>
+                        <p style="color: #28a745; font-size: 0.9rem;">Safety Score: ${product.safetyScore}%</p>
+                        <p style="color: #666; font-size: 0.8rem;">Origin: ${product.origin}</p>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
+                            <button class="btn btn-secondary" onclick="viewProductDetails(${product.id})">Details</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // AI Assistant Functions
+        function toggleAI() {
+            const modal = document.getElementById('aiModal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (message) {
+                addAIMessage(message, 'user');
+                processAIResponse(message);
+                input.value = '';
+            }
+        }
+
+        function handleAIInput(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        function addAIMessage(message, sender) {
+            const content = document.getElementById('aiContent');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = ai-message ai-${sender};
+            messageDiv.textContent = message;
+            content.appendChild(messageDiv);
+            content.scrollTop = content.scrollHeight;
+        }
+
+        function processAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            let response = '';
+
+            if (message.includes('register') || message.includes('vendor')) {
+                response = "I can help you register as a vendor! Please fill out the vendor registration form above. You'll need your business details, contact information, and food safety certifications.";
+            } else if (message.includes('product') || message.includes('food')) {
+                response = "I can help you find products! We have fresh vegetables, grains, oils, spices, and more. All products have real images and safety scores. What type of product are you looking for?";
+            } else if (message.includes('safety') || message.includes('hygiene')) {
+                response = "Food safety is our top priority! We monitor temperature, hygiene standards, storage conditions, and cross-contamination risks in real-time. All vendors must meet strict safety standards.";
+            } else if (message.includes('waste') || message.includes('recycling')) {
+                response = "Our smart waste management system helps reduce waste by 22% on average. We track daily waste, recycling rates, and cost savings. Would you like to see the waste optimization tips?";
+            } else if (message.includes('payment') || message.includes('pay')) {
+                response = "We offer multiple secure payment methods: credit/debit cards, mobile payments, cryptocurrency, and QR codes. All transactions are encrypted and secure.";
+            } else if (message.includes('privacy') || message.includes('data')) {
+                response = "Your privacy is protected! We use industry-standard encryption, never share your data with third parties, and comply with GDPR. You can request data deletion anytime.";
+            } else if (message.includes('cart') || message.includes('shopping')) {
+                response = "You can add items to your cart by clicking 'Add to Cart' on any product. View your cart by clicking the cart icon in the header. You can modify quantities or remove items there.";
+            } else if (message.includes('price') || message.includes('cost') || message.includes('rupee')) {
+                response = "All our prices are in Indian Rupees (₹). We offer competitive pricing with no hidden charges. You can see prices clearly displayed on each product.";
+            } else if (message.includes('delivery') || message.includes('shipping')) {
+                response = "We offer fast delivery within 24 hours. Delivery charge is ₹50 for orders above ₹500, free for orders above ₹1000. We ensure safe and hygienic delivery.";
+            } else if (message.includes('language') || message.includes('hindi') || message.includes('marathi')) {
+                response = "We support multiple languages! Click the language buttons (EN, हिं, मरा) in the header to switch between English, Hindi, and Marathi.";
+            } else if (message.includes('offer') || message.includes('discount')) {
+                response = "Check out our floating offers at the top! Currently we have 20% off on all spices with code SPICE20. More offers coming soon!";
+            } else if (message.includes('help') || message.includes('support')) {
+                response = "I'm here to help! I can assist with:\n• Product search and recommendations\n• Vendor registration\n• Food safety information\n• Waste management tips\n• Payment methods\n• Language support\n• Order tracking\nWhat do you need help with?";
+            } else {
+                response = "I can help you with vendor registration, product search, food safety monitoring, waste management, payments, cart management, language support, and more. What would you like to know?";
+            }
+
+            setTimeout(() => addAIMessage(response, 'bot'), 500);
+        }
+
+        // Voice Recognition
+        function startVoiceRecognition() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            const aiInput = document.getElementById('aiInput');
+
+            if (!isRecording) {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = 'en-US';
+
+                    recognition.onstart = () => {
+                        isRecording = true;
+                        voiceBtn.style.background = '#dc3545';
+                        voiceBtn.textContent = '🔴';
+                    };
+
+                    recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        aiInput.value = transcript;
+                        sendAIMessage();
+                    };
+
+                    recognition.onend = () => {
+                        isRecording = false;
+                        voiceBtn.style.background = '';
+                        voiceBtn.textContent = '🎤';
+                    };
+
+                    recognition.start();
+                } else {
+                    addAIMessage("Sorry, voice recognition is not supported in your browser. Please type your message.", 'bot');
+                }
+            }
+        }
+
+        // Payment System
+        function selectPayment(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            const form = document.getElementById('paymentForm');
+            form.style.display = 'block';
+        }
+
+        function processPayment() {
+            showMessage('Payment processed successfully! Transaction ID: ' + Math.random().toString(36).substr(2, 9), 'success');
+        }
+
+        // Enhanced Waste Management
+        function optimizeWasteManagement() {
+            const wasteData = {
+                todayWaste: 2.5,
+                weeklyAverage: 18.2,
+                recyclingRate: 85,
+                costSavings: 3400,
+                reduction: 22,
+                target: 15
+            };
+
+            const wasteSection = document.querySelector('.waste-tracker');
+            wasteSection.innerHTML = `
+                <h3>Waste Optimization Dashboard</h3>
+                <div class="waste-progress">
+                    <h4>Waste Reduction Progress</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${wasteData.reduction}%"></div>
+                    </div>
+                    <p>${wasteData.reduction}% reduction achieved (Target: ${wasteData.target}%)</p>
+                </div>
+                <div class="waste-details">
+                    <div class="waste-detail">
+                        <h4>Today's Waste</h4>
+                        <p style="font-size: 1.5rem; color: #28a745;">${wasteData.todayWaste} kg</p>
+                        <small>15% reduction from yesterday</small>
+                    </div>
+                    <div class="waste-detail">
+                        <h4>Weekly Average</h4>
+                        <p style="font-size: 1.5rem; color: #007bff;">${wasteData.weeklyAverage} kg</p>
+                        <small>22% below target</small>
+                    </div>
+                    <div class="waste-detail">
+                        <h4>Recycling Rate</h4>
+                        <p style="font-size: 1.5rem; color: #20c997;">${wasteData.recyclingRate}%</p>
+                        <small>Excellent performance</small>
+                    </div>
+                    <div class="waste-detail">
+                        <h4>Cost Savings</h4>
+                        <p style="font-size: 1.5rem; color: #ffc107;">₹${wasteData.costSavings}</p>
+                        <small>This week</small>
+                    </div>
+                </div>
+                <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <h4>Optimization Recommendations:</h4>
+                    <ul>
+                        <li>✅ Use smaller portion sizes to reduce food waste</li>
+                        <li>✅ Implement FIFO (First In, First Out) inventory system</li>
+                        <li>✅ Compost organic waste for cost savings</li>
+                        <li>✅ Monitor expiration dates more closely</li>
+                        <li>✅ Consider donating excess food to local shelters</li>
+                        <li>✅ Use reusable containers instead of disposable ones</li>
+                        <li>✅ Track waste patterns to identify improvement areas</li>
+                    </ul>
+                </div>
+                <button class="btn btn-success" onclick="resetWasteDashboard()">Reset Dashboard</button>
+            `;
+            
+            showMessage('Waste optimization dashboard updated with detailed analytics!', 'success');
+        }
+
+        function resetWasteDashboard() {
+            const wasteSection = document.querySelector('.waste-tracker');
+            wasteSection.innerHTML = `
+                <h3>Waste Tracking Dashboard</h3>
+                <div class="waste-stats">
+                    <div class="waste-stat">
+                        <h4>Today's Waste</h4>
+                        <p>2.5 kg</p>
+                        <small>15% reduction from yesterday</small>
+                    </div>
+                    <div class="waste-stat">
+                        <h4>Weekly Average</h4>
+                        <p>18.2 kg</p>
+                        <small>22% below target</small>
+                    </div>
+                    <div class="waste-stat">
+                        <h4>Recycling Rate</h4>
+                        <p>85%</p>
+                        <small>Excellent performance</small>
+                    </div>
+                    <div class="waste-stat">
+                        <h4>Cost Savings</h4>
+                        <p>₹3,400</p>
+                        <small>This week</small>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="optimizeWasteManagement()">Optimize Waste Management</button>
+            `;
+        }
+
+        // Food Safety
+        function generateSafetyReport() {
+            const report = Food Safety Report - ${new Date().toLocaleDateString()}\n\n✅ Temperature Monitoring: Normal (4°C)\n✅ Hygiene Standards: Excellent\n⚠ Storage Conditions: Good (Check in 2 hours)\n✅ Cross-contamination Risk: Low\n\nOverall Safety Score: 92%;
+            addAIMessage(report, 'bot');
+            showMessage('Safety report generated successfully!', 'success');
+        }
+
+        // Vendor Registration
+        function setupEventListeners() {
+            document.getElementById('vendorForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                showMessage('Vendor registration submitted successfully! We will review your application within 24 hours.', 'success');
+                e.target.reset();
+            });
+
+            document.getElementById('orderForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                showMessage('Order placed successfully! You will receive a confirmation shortly.', 'success');
+                closeOrderModal();
+            });
+        }
+
+        // Utility Functions
+        function placeOrder(productName, price) {
+            document.getElementById('orderProduct').value = productName;
+            document.getElementById('orderModal').style.display = 'block';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            document.getElementById('orderForm').reset();
+        }
+
+        function viewProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                alert(Product Details:\n\nName: ${product.name}\nSupplier: ${product.supplier}\nPrice: $${product.price}\nRating: ${product.rating}/5\nSafety Score: ${product.safetyScore}%\nOrigin: ${product.origin}\n\nAll products meet our strict quality and safety standards!);
+            }
+        }
+
+        function viewPrivacyPolicy() {
+            alert('Privacy Policy:\n\n🔐 Data Encryption: All data is encrypted using AES-256\n🛡 No Third-Party Sharing: We never sell or share your data\n📋 Data Control: You can request data deletion anytime\n⚖ GDPR Compliant: Full compliance with data protection laws\n🔍 Transparent AI: Our algorithms are bias-free and explainable\n\nContact us at privacy@streetfoodhub.com for any concerns.');
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = message ${type};
+            messageDiv.textContent = message;
+            document.body.insertBefore(messageDiv, document.body.firstChild);
+            setTimeout(() => messageDiv.remove(), 5000);
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const orderModal = document.getElementById('orderModal');
+            if (event.target === orderModal) {
+                closeOrderModal();
+            }
+        }
+    </script>
+</body>
+</html>
