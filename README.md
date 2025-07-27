@@ -1,8 +1,8 @@
 # streetfoodvendor
-📌 Problem
+Problem
 Street food vendors in India struggle to find trustworthy and affordable sources for raw materials. Many suppliers are unverified, and there’s no easy way to compare prices, reviews, or ensure hygiene standards.
 
-💡 Our Solution
+Our Solution
 VendorConnect is a web app that helps vendors:
 
 Find verified suppliers
